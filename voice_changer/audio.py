@@ -3,7 +3,7 @@
 Two independent streams (input + output) communicate through a small queue.
 The output callback pulls a block, runs it through the pipeline, and writes
 to the output device. If the queue is empty (input late), we output silence
-rather than block — Meet/Zoom prefers a glitch over a stalled stream.
+rather than block, because Meet/Zoom prefers a glitch over a stalled stream.
 """
 
 import queue
@@ -60,7 +60,7 @@ class AudioEngine:
             try:
                 self._queue.put_nowait(indata[:, 0].copy())
             except queue.Full:
-                # drop oldest, push newest — keeps latency from growing
+                # drop oldest, push newest, which keeps latency from growing
                 try:
                     self._queue.get_nowait()
                     self._queue.put_nowait(indata[:, 0].copy())

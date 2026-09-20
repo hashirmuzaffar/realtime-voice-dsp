@@ -57,7 +57,7 @@ class PhaseVocoder:
         - STFT analysis at hop H over Hann-windowed frames of size F.
         - Per bin, recover true frequency from phase advance.
         - Reassign magnitude to bin pair (floor, ceil) of k*ratio with
-          linear interpolation — smoother than rounding to one bin.
+          linear interpolation, smoother than rounding to one bin.
         - Synthesize phase by accumulating the new instantaneous frequency.
         - Inverse STFT with overlap-add and window-norm compensation.
 
@@ -91,11 +91,11 @@ class PhaseVocoder:
         self._bin_idx = np.arange(self.n_bins, dtype=np.float64)
         self._expected_phase = 2.0 * np.pi * self.hop * self._bin_idx / self.fft
 
-        # Smooth Hann-shaped cepstral lifter — eliminates "plastic" ringing
+        # Smooth Hann-shaped cepstral lifter, eliminates "plastic" ringing
         # caused by a hard rectangular cutoff.
         self._lifter = self._make_lifter(fade_in=30, fade_out=70)
 
-        # Exponential smoothing of the spectral envelope across frames —
+        # Exponential smoothing of the spectral envelope across frames,
         # eliminates the frame-to-frame envelope jitter that produces a
         # "modulated / processed" timbre.
         self._env_state = None
@@ -166,7 +166,7 @@ class PhaseVocoder:
         # --- Pitch shift via spectral gather ------------------------------
         # For each output bin q, sample input bin q/ratio with linear interp.
         # We also gather omega_in (scaled by ratio) and the input phase
-        # itself (via complex interp, to handle wrapping) — the gathered
+        # itself (via complex interp, to handle wrapping); the gathered
         # phase is the reference for phase-locking below.
         if abs(self.pitch_ratio - 1.0) > 1e-3:
             src = self._bin_idx / self.pitch_ratio
@@ -203,7 +203,7 @@ class PhaseVocoder:
         # which sounds smeary / "phasey" / underwater. With locking, we find
         # spectral peaks (harmonics of the voice) and force surrounding bins
         # to keep the same relative phase pattern they had in the input.
-        # The voice keeps its time-domain coherence — sounds like a real
+        # The voice keeps its time-domain coherence, so it sounds like a real
         # voice instead of a phase vocoder.
         max_mag = float(np.max(mag_out)) if mag_out.size else 0.0
         if max_mag > 1e-7 and self.n_bins > 5:
@@ -364,7 +364,7 @@ class Pipeline:
         self.input_gain_db = 0.0
         self.output_gain_db = 0.0
         self.dry_wet = 1.0
-        self.mute = False           # hard mute — outputs silence
+        self.mute = False           # hard mute, outputs silence
         self.safety_lock = True     # mute when the chain is a no-op
 
         self.input_level = 0.0
@@ -420,21 +420,21 @@ class Pipeline:
             x = x * (10.0 ** (self.input_gain_db / 20.0))
         self.input_level = float(np.sqrt(np.mean(x * x) + 1e-12))
 
-        # Hard mute — never lets anything through.
+        # Hard mute, never lets anything through.
         if self.mute:
             silence = np.zeros_like(x)
             self.output_level = 0.0
             self._record_append(silence)
             return silence
 
-        # Bypass guard — do not pass the dry signal through unprocessed.
+        # Bypass guard: do not pass the dry signal through unprocessed.
         if self.safety_lock and not self.is_processing_active():
             silence = np.zeros_like(x)
             self.output_level = 0.0
             self._record_append(silence)
             return silence
 
-        # High-pass / DC removal first — kills mic rumble + room hum.
+        # High-pass / DC removal first, kills mic rumble + room hum.
         x = self.hpf.process(x)
 
         gated = self.gate.process(x)

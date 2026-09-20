@@ -4,7 +4,7 @@ Tuning notes:
     - Smaller pitch and formant shifts sound cleaner. Large shifts cost
       naturalness because the phase vocoder has more to reconstruct.
     - Pitch is in semitones; formant is a spectral-envelope scale factor.
-      Shifting both together keeps the result plausible as a human voice —
+      Shifting both together keeps the result plausible as a human voice;
       pitch alone produces the classic chipmunk/monster artifact.
     - gate_db is the noise-gate threshold, gain_db the output trim, and
       dry_wet the processed/unprocessed blend.
@@ -14,7 +14,7 @@ output instead of routing the dry signal through.
 """
 
 PRESETS = {
-    # Gentlest shift — cleanest reconstruction.
+    # Gentlest shift, cleanest reconstruction.
     "Natural":        dict(pitch=-0.7, formant=0.97, gate_db=-52, gain_db=0, dry_wet=1.0),
     "Subtle shift":   dict(pitch=-1.2, formant=0.95, gate_db=-52, gain_db=0, dry_wet=1.0),
     "Deep":           dict(pitch=-4.0, formant=0.84, gate_db=-50, gain_db=0, dry_wet=1.0),

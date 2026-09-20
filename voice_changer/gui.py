@@ -2,7 +2,7 @@
 
 All audio processing happens in sounddevice's PortAudio threads.
 The GUI thread:
-    - sets pipeline parameters (atomic float assignment — GIL safe enough)
+    - sets pipeline parameters (atomic float assignment, GIL safe enough)
     - polls input/output level meters via after()
     - starts/stops the AudioEngine
     - persists settings on close
@@ -103,7 +103,7 @@ class VoiceChangerGUI:
 
         self.safety_var = tk.BooleanVar(value=True)
         ttk.Checkbutton(
-            ctrl, text="Bypass guard — silence output when no shift is applied",
+            ctrl, text="Bypass guard: silence output when no shift is applied",
             variable=self.safety_var, command=self._on_safety,
         ).grid(row=5, column=0, columnspan=3, sticky="w", padx=6, pady=4)
 
@@ -204,7 +204,7 @@ class VoiceChangerGUI:
     def _toggle_mute(self):
         self.pipeline.mute = not self.pipeline.mute
         if self.pipeline.mute:
-            self.mute_btn.configure(text="MUTED — press Space to unmute",
+            self.mute_btn.configure(text="MUTED, press Space to unmute",
                                     bg="#c33", activebackground="#a22")
         else:
             self.mute_btn.configure(text="MUTE  (Space)",
@@ -212,11 +212,11 @@ class VoiceChangerGUI:
 
     def _test_playback(self):
         """Play back the last 5 seconds of processed output on the system
-        default speaker — NOT through CABLE — so you can hear yourself."""
+        default speaker, NOT through CABLE, so you can hear yourself."""
         clip = self.pipeline.get_recent(5.0)
         if np.max(np.abs(clip)) < 1e-4:
             self.status_label.configure(
-                text="no audio captured yet — start engine and talk first",
+                text="no audio captured yet, start engine and talk first",
                 foreground="orange")
             return
 

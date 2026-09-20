@@ -2,7 +2,7 @@
 
 Real-time pitch and formant shifting for a live microphone, written from
 scratch in NumPy and SciPy. No ML, no external audio libraries beyond
-PortAudio bindings — an STFT phase vocoder, a cepstral formant warper, a noise
+PortAudio bindings: an STFT phase vocoder, a cepstral formant warper, a noise
 gate and a limiter, running inside a low-latency audio callback.
 
 Routes to a virtual audio device, so the processed signal can be used as a
@@ -19,7 +19,7 @@ mic ──► high-pass ──► noise gate ──► phase vocoder ──► l
 ## The interesting part
 
 **Pitch and formant are shifted independently.** Naive pitch shifting scales
-the whole spectrum, which drags the formants along with it — that is why
+the whole spectrum, which drags the formants along with it. That is why
 resampled speech sounds like a chipmunk or a monster rather than a different
 person. Here the spectral envelope is separated from the excitation and warped
 on its own:
@@ -44,7 +44,7 @@ audible as a metallic edge.
 independent streams joined by a bounded queue. If the queue fills, the oldest
 block is dropped and the newest pushed, so latency cannot grow unboundedly
 during a long call. If the queue is empty, the output callback emits silence
-rather than waiting — a conferencing app tolerates a glitch far better than a
+rather than waiting, because a conferencing app tolerates a glitch far better than a
 stalled stream.
 
 **A bypass guard, on by default.** If pitch and formant are both within 1% of
@@ -86,7 +86,7 @@ pactl load-module module-null-sink sink_name=virt
 ./install.sh
 ```
 
-**Windows** — install [VB-CABLE](https://vb-audio.com/Cable/), then `install.bat`.
+**Windows**: install [VB-CABLE](https://vb-audio.com/Cable/), then `install.bat`.
 
 ## Run
 
@@ -118,7 +118,7 @@ Point your conferencing app's microphone at the virtual device
 | Very high | +6.5 st | 1.28 | |
 | Muffled | −1.0 st | 0.85 | lower gate, distant character |
 
-There is deliberately no bypass preset — use mute instead.
+There is deliberately no bypass preset; use mute instead.
 
 ---
 
@@ -133,7 +133,7 @@ voice_changer/settings.py   JSON persistence in ~/.voice_changer.json
 voice_changer/__main__.py   CLI: --list, --headless, GUI default
 ```
 
-`dsp.py` has no dependency on the audio or GUI layers — it is plain NumPy in,
+`dsp.py` has no dependency on the audio or GUI layers. It is plain NumPy in,
 NumPy out, so the processing can be tested offline without an audio device.
 
 ## Measured behaviour
@@ -151,7 +151,7 @@ exactly zero RMS at unity settings.
 
 ## Limitations
 
-Mono only. The phase vocoder introduces the usual transient smearing — plosives
+Mono only. The phase vocoder introduces the usual transient smearing: plosives
 and sharp consonants soften as the shift grows, which is inherent to the method
 rather than a tuning problem; a transient-preserving variant would need onset
 detection and phase reset. Large shifts beyond roughly ±7 semitones stop
@@ -160,4 +160,4 @@ structured to make one straightforward.
 
 ## Licence
 
-MIT — see [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE).
